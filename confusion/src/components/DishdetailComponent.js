@@ -24,6 +24,9 @@ class DishDetail extends Component {
                 </ul>
             );
         }
+        else {
+            return (<div></div>);
+        }
     }
     renderDish(dish) {
         if (dish != null) {
