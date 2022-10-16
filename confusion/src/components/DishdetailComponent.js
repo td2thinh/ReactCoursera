@@ -1,12 +1,114 @@
 import React from 'react';
 import {
     Card, CardImg, CardText, CardBody,
-    CardTitle, Breadcrumb, BreadcrumbItem
+    CardTitle, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Row, Col
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { Control, LocalForm, Errors } from 'react-redux-form';
+
+const required = (val) => val && val.length;
+const maxLength = (len) => (val) => !(val) || (val.length <= len);
+const minLength = (len) => (val) => val && (val.length >= len);
+class CommentForm extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            modal: false
+        };
+        this.toggle = this.toggle.bind(this);
+    }
+    toggle = () => {
+        this.setState({
+            modal: !this.state.modal
+        });
+    };
 
 
-
+    render() {
+        return (
+            <div>
+                <Button outline onClick={this.toggle}>
+                    <h3>Submit Comment</h3>
+                </Button>
+                <Modal isOpen={this.state.modal} toggle={this.toggle}>
+                    <ModalHeader toggle={this.toggle}><h3 className='font-weight-bold'>Submit Comment</h3></ModalHeader>
+                    <ModalBody>
+                        <LocalForm onSubmit={(values) => {
+                            console.log(values);
+                            alert(values)
+                        }}>
+                            <Row className='form-group'>
+                                <Label htmlFor="rating" >Rating</Label>
+                                <Col>
+                                    <Control.select model=".rating" id='rating' name='rating'
+                                        className='form-control'
+                                        validators={
+                                            required
+                                        }
+                                    >
+                                        <option value='1'>1</option>
+                                        <option value='2'>2</option>
+                                        <option value='3'>3</option>
+                                        <option value='4'>4</option>
+                                        <option value='5'>5</option>
+                                    </Control.select>
+                                </Col>
+                            </Row>
+                            <Row className="form-group">
+                                <Label htmlFor="name">Your Name</Label>
+                                <Col>
+                                    <Control.text model=".name" id="name" name="name"
+                                        placeholder="Your Name"
+                                        className="form-control"
+                                        validators={{
+                                            required, minLength: minLength(3), maxLength: maxLength(15)
+                                        }}
+                                    />
+                                    <Errors
+                                        className="text-danger"
+                                        model=".name"
+                                        show="touched"
+                                        messages={{
+                                            required: 'Required ',
+                                            minLength: 'Must be greater than 2 characters',
+                                            maxLength: 'Must be 15 characters or less'
+                                        }}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className='form-group'>
+                                <Label htmlFor="comment">Comment</Label>
+                                <Col>
+                                    <Control.textarea rows="6" model='.comment' id='comment' name='comment'
+                                        className='form-control'
+                                        validators={
+                                            required
+                                        }>
+                                        <Errors
+                                            className='text-danger'
+                                            model=".comment"
+                                            show="touched"
+                                            messages={
+                                                { required: 'Required' }
+                                            } />
+                                    </Control.textarea>
+                                </Col>
+                            </Row>
+                            <Row className="form-group mt-2">
+                                <Col>
+                                    <Button type="submit" color="primary">
+                                        Submit
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </LocalForm>
+                    </ModalBody>
+                </Modal>
+            </div >
+        )
+    }
+}
 
 const RenderComments = ({ comments }) => {
     if (comments != null) {
@@ -29,7 +131,6 @@ const RenderComments = ({ comments }) => {
 }
 function RenderDish({ dish }) {
     if (dish != null) {
-        console.log('this is invoked');
         return (<Card>
             <CardImg top src={dish.image} alt={dish.name} />
             <CardBody>
@@ -64,6 +165,7 @@ const DishDetail = (props) => {
                 </div>
                 <div className="col-12 col-md-5 m-1">
                     <RenderComments comments={props.comments} />
+                    <CommentForm />
                 </div>
             </div>
         </div>
