@@ -17,12 +17,19 @@ class CommentForm extends React.Component {
             modal: false
         };
         this.toggle = this.toggle.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     toggle = () => {
         this.setState({
             modal: !this.state.modal
         });
     };
+
+    handleSubmit = (values) => {
+        this.toggle();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+    }
+
 
 
     render() {
@@ -34,10 +41,7 @@ class CommentForm extends React.Component {
                 <Modal isOpen={this.state.modal} toggle={this.toggle}>
                     <ModalHeader toggle={this.toggle}><h3 className='font-weight-bold'>Submit Comment</h3></ModalHeader>
                     <ModalBody>
-                        <LocalForm onSubmit={(values) => {
-                            console.log(values);
-                            alert(values)
-                        }}>
+                        <LocalForm onSubmit={this.handleSubmit}>
                             <Row className='form-group'>
                                 <Label htmlFor="rating" >Rating</Label>
                                 <Col>
@@ -110,19 +114,22 @@ class CommentForm extends React.Component {
     }
 }
 
-const RenderComments = ({ comments }) => {
+const RenderComments = ({ comments, addComment, dishId }) => {
     if (comments != null) {
         return (
-            <ul className="list-unstyled">
-                {comments.map((comment) => {
-                    return (
-                        <li key={comment.id}>
-                            <p>{comment.comment}</p>
-                            <p>-- {comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}</p>
-                        </li>
-                    );
-                })}
-            </ul>
+            <div className='container'>
+                <ul className="list-unstyled">
+                    {comments.map((comment) => {
+                        return (
+                            <li key={comment.id}>
+                                <p>{comment.comment}</p>
+                                <p>-- {comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(comment.date)))}</p>
+                            </li>
+                        );
+                    })}
+                </ul>
+                <CommentForm dishId={dishId} addComment={addComment} />
+            </div>
         );
     }
     else {
@@ -164,8 +171,10 @@ const DishDetail = (props) => {
                     <RenderDish dish={props.dish} />
                 </div>
                 <div className="col-12 col-md-5 m-1">
-                    <RenderComments comments={props.comments} />
-                    <CommentForm />
+                    <RenderComments comments={props.comments}
+                        addComment={props.addComment}
+                        dishId={props.dish.id}
+                    />
                 </div>
             </div>
         </div>
