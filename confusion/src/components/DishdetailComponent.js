@@ -29,7 +29,7 @@ class CommentForm extends React.Component {
 
     handleSubmit = (values) => {
         this.toggle();
-        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+        this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
     }
 
 
@@ -116,7 +116,7 @@ class CommentForm extends React.Component {
     }
 }
 
-const RenderComments = ({ comments, addComment, dishId }) => {
+const RenderComments = ({ comments, postComment, dishId }) => {
     if (comments != null) {
         return (
             <div className='container'>
@@ -130,7 +130,7 @@ const RenderComments = ({ comments, addComment, dishId }) => {
                         );
                     })}
                 </ul>
-                <CommentForm dishId={dishId} addComment={addComment} />
+                <CommentForm dishId={dishId} postComment={postComment} />
             </div>
         );
     }
@@ -149,7 +149,6 @@ function RenderDish({ dish }) {
         </Card>);
     }
     else {
-        console.log('this is invoked');
         return (<div></div>);
     }
 }
@@ -194,7 +193,7 @@ const DishDetail = (props) => {
                     </div>
                     <div className="col-12 col-md-5 m-1">
                         <RenderComments comments={props.comments}
-                            addComment={props.addComment}
+                            postComment={props.postComment}
                             dishId={props.dish.id}
                         />
                     </div>
